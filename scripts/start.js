@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { createBareServer } from '@tomphttp/bare-server-node';
 import address from 'address';
 import chalk from 'chalk';
@@ -9,7 +10,7 @@ import { createServer } from 'node:http';
 import { join } from 'node:path';
 import createRammerhead from 'rammerhead/src/server/index.js';
 import { websitePath } from 'website';
-import fetch from 'node-fetch';
+import requestIp from 'request-ip';
 
 // what a dotenv in a project like this serves: .env.local file containing developer port
 expand(config());
@@ -17,28 +18,7 @@ expand(config());
 const rh = createRammerhead();
 
 // Define an array of allowed IP addresses
-const allowedIpAddresses = ['127.0.0.1', '192.168.1.100', '192.168.1.101', '27.4.103.227']; // Add your desired IP addresses
-
-// Middleware to restrict access to the specified IP addresses
-const restrictToPublicIpAddresses = async (req, res, next) => {
-  try {
-    // Use an external service like "ipify" to obtain the client's public IP address
-    const response = await fetch('https://api.ipify.org?format=json');
-    const data = await response.json();
-    const clientPublicIp = data.ip;
-
-    if (allowedPublicIpAddresses.includes(clientPublicIp)) {
-      // If the client's public IP address matches any of the allowed public IP addresses, allow the request to proceed
-      next();
-    } else {
-      // If the client's public IP address does not match any of the allowed public IP addresses, deny the request
-      res.status(403).send(clientPublicIp+' Access Denied'); // You can customize the response here
-    }
-  } catch (error) {
-    console.error('Error retrieving public IP address:', error);
-    res.status(500).send('Internal Server Error'); // Handle errors gracefully
-  }
-};
+const allowedPublicIpAddresses = ['127.0.0.1', '192.168.1.100', '192.168.1.101', '27.4.103.227']; // Add your desired IP addresses
 
 
 // used when forwarding the script
@@ -65,6 +45,20 @@ console.log(`${chalk.cyan('Starting the server...')}\n`);
 
 const app = express();
 
+app.use(requestIp.mw());
+
+// Middleware to restrict access to the specified public IP addresses
+const restrictToPublicIpAddresses = (req, res, next) => {
+	const clientPublicIp = req.clientIp.includes('::ffff:') ? req.clientIp.split(':').pop() : req.clientIp; // Use req.clientIp to access the client's IP address
+  
+	if (allowedPublicIpAddresses.includes(clientPublicIp)) {
+	  // If the client's public IP address matches any of the allowed public IP addresses, allow the request to proceed
+	  next();
+	} else {
+		res.sendFile('./index.html');
+	}
+  };
+
 app.use(restrictToPublicIpAddresses);
 
 app.use(
@@ -89,6 +83,18 @@ app.use((error, req, res, next) => {
 
 	next();
 });
+
+app.get('*', (req, res) => {
+	const indexPath = './index.html';
+	res.sendFile(indexPath, {root: '.'}, (err) => {
+	  if (err) {
+		console.error(err);
+		res.status(500).send('Internal Server Error');
+	  }
+	});
+  });
+  
+
 
 const server = createServer();
 
