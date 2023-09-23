@@ -15,6 +15,22 @@ expand(config());
 
 const rh = createRammerhead();
 
+// Define an array of allowed IP addresses
+const allowedIpAddresses = ['127.0.0.1', '192.168.1.100', '192.168.1.101']; // Add your desired IP addresses
+
+// Middleware to restrict access to the specified IP addresses
+const restrictToIpAddresses = (req, res, next) => {
+  const clientIp = req.ip; // Express automatically determines the client's IP address
+  if (allowedIpAddresses.includes(clientIp)) {
+    // If the client's IP matches any of the allowed IP addresses, allow the request to proceed
+    next();
+  } else {
+    // If the client's IP does not match any of the allowed IP addresses, deny the request
+    res.status(403).send('Access Denied'); // You can customize the response here
+  }
+};
+
+
 // used when forwarding the script
 const rammerheadScopes = [
 	'/rammerhead.js',
@@ -38,6 +54,8 @@ const rammerheadSession = /^\/[a-z0-9]{32}/;
 console.log(`${chalk.cyan('Starting the server...')}\n`);
 
 const app = express();
+
+app.use(restrictToIpAddresses);
 
 app.use(
 	'/api/db',
