@@ -26,7 +26,7 @@ const restrictToIpAddresses = (req, res, next) => {
     next();
   } else {
     // If the client's IP does not match any of the allowed IP addresses, deny the request
-    res.status(403).send('Access Denied'); // You can customize the response here
+    res.status(403).send(clientIp+' Access Denied'); // You can customize the response here
   }
 };
 
