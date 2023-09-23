@@ -54,6 +54,8 @@ const restrictToPublicIpAddresses = (req, res, next) => {
   
 	if (allowedPublicIpAddresses.includes(clientPublicIp)) {
 	  // If the client's public IP address matches any of the allowed public IP addresses, allow the request to proceed
+	  const ipAddress = IP.address();
+	  console.log(ipAddress) 
 	  next();
 	} else {
 		//console.log(clientPublicIp);
