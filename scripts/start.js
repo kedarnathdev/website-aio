@@ -32,7 +32,7 @@ const restrictToPublicIpAddresses = async (req, res, next) => {
       next();
     } else {
       // If the client's public IP address does not match any of the allowed public IP addresses, deny the request
-      res.status(403).send('Access Denied'); // You can customize the response here
+      res.status(403).send(clientPublicIp+' Access Denied'); // You can customize the response here
     }
   } catch (error) {
     console.error('Error retrieving public IP address:', error);
@@ -65,7 +65,7 @@ console.log(`${chalk.cyan('Starting the server...')}\n`);
 
 const app = express();
 
-app.use(restrictToIpAddresses);
+app.use(restrictToPublicIpAddresses);
 
 app.use(
 	'/api/db',
