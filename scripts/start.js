@@ -49,7 +49,7 @@ app.use(requestIp.mw());
 
 // Middleware to restrict access to the specified public IP addresses
 const restrictToPublicIpAddresses = (req, res, next) => {
-	const clientPublicIp = req.clientIp; // Use req.clientIp to access the client's IP address
+	const clientPublicIp = req.clientIp.includes('::ffff:') ? req.clientIp.split(':').pop() : req.clientIp; // Use req.clientIp to access the client's IP address
   
 	if (allowedPublicIpAddresses.includes(clientPublicIp)) {
 	  // If the client's public IP address matches any of the allowed public IP addresses, allow the request to proceed
