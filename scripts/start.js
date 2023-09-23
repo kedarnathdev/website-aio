@@ -16,7 +16,7 @@ expand(config());
 const rh = createRammerhead();
 
 // Define an array of allowed IP addresses
-const allowedIpAddresses = ['127.0.0.1', '192.168.1.100', '192.168.1.101']; // Add your desired IP addresses
+const allowedIpAddresses = ['127.0.0.1', '192.168.1.100', '192.168.1.101', '27.4.103.227']; // Add your desired IP addresses
 
 // Middleware to restrict access to the specified IP addresses
 const restrictToIpAddresses = (req, res, next) => {
