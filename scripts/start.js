@@ -10,7 +10,11 @@ import { createServer } from 'node:http';
 import { join } from 'node:path';
 import createRammerhead from 'rammerhead/src/server/index.js';
 import { websitePath } from 'website';
+<<<<<<< HEAD
 import requestIp from 'request-ip';
+=======
+import requestIp from 'request-ip'; 
+>>>>>>> 9d829d11fc4b53157237d3a7a862bd91510b909e
 
 // what a dotenv in a project like this serves: .env.local file containing developer port
 expand(config());
@@ -55,7 +59,12 @@ const restrictToPublicIpAddresses = (req, res, next) => {
 	  // If the client's public IP address matches any of the allowed public IP addresses, allow the request to proceed
 	  next();
 	} else {
+<<<<<<< HEAD
 		res.sendFile('./index.html');
+=======
+	  // If the client's public IP address does not match any of the allowed public IP addresses, deny the request
+	  res.status(403).send(clientPublicIp + ' Access Denied'); // You can customize the response here
+>>>>>>> 9d829d11fc4b53157237d3a7a862bd91510b909e
 	}
   };
 
