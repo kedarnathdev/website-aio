@@ -9,6 +9,7 @@ import { createServer } from 'node:http';
 import { join } from 'node:path';
 import createRammerhead from 'rammerhead/src/server/index.js';
 import { websitePath } from 'website';
+import fetch from 'node-fetch';
 
 // what a dotenv in a project like this serves: .env.local file containing developer port
 expand(config());
@@ -19,14 +20,23 @@ const rh = createRammerhead();
 const allowedIpAddresses = ['127.0.0.1', '192.168.1.100', '192.168.1.101', '27.4.103.227']; // Add your desired IP addresses
 
 // Middleware to restrict access to the specified IP addresses
-const restrictToIpAddresses = (req, res, next) => {
-  const clientIp = req.ip; // Express automatically determines the client's IP address
-  if (allowedIpAddresses.includes(clientIp)) {
-    // If the client's IP matches any of the allowed IP addresses, allow the request to proceed
-    next();
-  } else {
-    // If the client's IP does not match any of the allowed IP addresses, deny the request
-    res.status(403).send(clientIp+' Access Denied'); // You can customize the response here
+const restrictToPublicIpAddresses = async (req, res, next) => {
+  try {
+    // Use an external service like "ipify" to obtain the client's public IP address
+    const response = await fetch('https://api.ipify.org?format=json');
+    const data = await response.json();
+    const clientPublicIp = data.ip;
+
+    if (allowedPublicIpAddresses.includes(clientPublicIp)) {
+      // If the client's public IP address matches any of the allowed public IP addresses, allow the request to proceed
+      next();
+    } else {
+      // If the client's public IP address does not match any of the allowed public IP addresses, deny the request
+      res.status(403).send('Access Denied'); // You can customize the response here
+    }
+  } catch (error) {
+    console.error('Error retrieving public IP address:', error);
+    res.status(500).send('Internal Server Error'); // Handle errors gracefully
   }
 };
 
