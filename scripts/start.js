@@ -19,7 +19,8 @@ expand(config());
 const rh = createRammerhead();
 
 // Define an array of allowed IP addresses
-const allowedPublicIpAddresses = ['127.0.0.1', '192.168.1.100', '192.168.1.101', '203.99.199.13']; // Add your desired IP addresses
+//const allowedPublicIpAddresses = ['127.0.0.1', '192.168.1.100', '192.168.1.101', '203.99.199.13']; // Add your desired IP addresses
+const allowedPublicIpAddresses = process.env.ADDRESS.split(' '); // Add your desired IP addresses
 
 
 // used when forwarding the script
